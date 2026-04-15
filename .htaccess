@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase http://localhost:3000/
+
+# Don't rewrite real files
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Don't rewrite real folders
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Send everything to index.php
+RewriteRule ^ serve.php [L]

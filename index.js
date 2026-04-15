@@ -1,4 +1,5 @@
 const endpoint = 'http://localhost:3000/serve.php';
+const downloadEndpoint = endpoint + '?uid=';
 
 const dropZone = document.querySelector('#drop_zone');
 const downloadContainer = document.querySelector('#download_container');
@@ -38,8 +39,8 @@ function uploadFile(file){
         const url = data.url;    
         generateQRcode(url);
         fileName.innerText = file_name;
-        downloadLink.innerText = url;
-        downloadLink.setAttribute('href', url);
+        downloadLink.innerText = downloadEndpoint + url;
+        downloadLink.setAttribute('href', downloadEndpoint + url);
         downloadContainer.style.display = 'flex';  
       }
     })
