@@ -1,6 +1,9 @@
 const endpoint = 'http://localhost:3000/serve.php';
 
 const dropZone = document.querySelector('#drop_zone');
+const downloadContainer = document.querySelector('#download_container');
+const fileName = document.querySelector('#file_name');
+const downloadLink = document.querySelector('#download_link');
 
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -30,13 +33,15 @@ function uploadFile(file){
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Upload success:', data);
-      alert('File uploaded successfully!');
-      const fileName = data.file;
-      const url = data.url;
-      console.log('file name: ', fileName, 'url: ', url);
-      generateQRcode(url);
-
+      if(data.success){
+        const file_name = data.file;
+        const url = data.url;    
+        generateQRcode(url);
+        fileName.innerText = file_name;
+        downloadLink.innerText = url;
+        downloadLink.setAttribute('href', url);
+        downloadContainer.style.display = 'flex';  
+      }
     })
     .catch(error => {
       console.error('Upload error:', error);
