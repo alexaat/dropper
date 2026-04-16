@@ -1,4 +1,5 @@
 const endpoint = 'http://localhost:3000/serve.php';
+
 const downloadEndpoint = endpoint + '?uid=';
 
 const dropZone = document.querySelector('#drop_zone');

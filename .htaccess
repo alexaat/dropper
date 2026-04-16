@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase http://localhost:3000/
+RewriteBase http://server.dropper.alexaat.com/
 
 # Don't rewrite real files
 RewriteCond %{REQUEST_FILENAME} !-f
