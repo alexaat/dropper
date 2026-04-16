@@ -36,11 +36,11 @@ function uploadFile(file){
     .then(data => {
       if(data.success){
         const file_name = data.file;
-        const url = data.url;    
-        generateQRcode(url);
+        const uid = data.uid;    
+        generateQRcode(uid);
         fileName.innerText = file_name;
-        downloadLink.innerText = downloadEndpoint + url;
-        downloadLink.setAttribute('href', downloadEndpoint + url);
+        downloadLink.innerText = downloadEndpoint + uid;
+        downloadLink.setAttribute('href', downloadEndpoint + uid);
         downloadContainer.style.display = 'flex';  
       }
     })

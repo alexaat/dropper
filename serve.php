@@ -64,15 +64,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $fileName = basename($file['name']);
-        $urlPath = floor(microtime(true) * 1000)."-".uniqid();
-        $targetFile = $uploadDir . $fileName;
+        $uid = floor(microtime(true) * 1000)."-".uniqid();
+        $file_dir = $uploadDir.$uid;
+        if (!is_dir($file_dir)) {
+            mkdir($file_dir, 0777, true);
+        }
+
+        $targetFile = $file_dir . "/" . $fileName;
 
         if (move_uploaded_file($file['tmp_name'], $targetFile)) {           
             echo json_encode([
                 "success" => true,
                 "message" => "File uploaded successfully",
                 "file" => $fileName,
-                "url" => $urlPath
+                "uid" => $uid
             ]);
         } else {
             echo json_encode([
@@ -91,11 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uri = $_SERVER['REQUEST_URI'];
     $prefix = '/serve.php?uid=';
 
+
+
     if (substr($uri, 0, strlen($prefix)) == $prefix) {
         $uid = substr($uri, strlen($prefix));      
-
-        serve_file();
-
+        serve_file($uid);
     }  
 
 } else {
@@ -106,8 +111,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-function serve_file(){
-    $file = 'uploads/result-image.png';
+function serve_file($uid){
+
+    $files = glob("uploads/".$uid."/*");
+    if (count($files) == 0) {
+        http_response_code(404);
+        echo "File not found.";
+        exit;
+    }
+    $file = $files[0];
+
     if (!file_exists($file)) {
         http_response_code(404);
         echo "File not found.";
@@ -132,8 +145,23 @@ function serve_file(){
 
     // Read the file and output it
     readfile($file);
+
+    // Delete folder
+    deleteDir("uploads/".$uid);
     exit;
 
 }
+
+function deleteDir($dir) {
+    foreach (glob($dir . '/*') as $file) {
+        if (is_dir($file)) {
+            deleteDir($file);
+        } else {
+            unlink($file);
+        }
+    }
+    rmdir($dir);
+}
+
 
 ?>
