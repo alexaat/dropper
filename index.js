@@ -38,18 +38,59 @@ function uploadFile(file){
     .then(data => {
       if(data.success){
         const file_name = data.file;
-        const uid = data.uid;    
-        generateQRcode(uid);
+        const uid = data.uid;        
         fileName.innerText = file_name;
         downloadLink.innerText = downloadEndpoint + uid;
         downloadLink.setAttribute('href', downloadEndpoint + uid);
-        downloadContainer.style.display = 'flex';  
+        downloadContainer.style.display = 'flex';
+        generateQRcode(downloadLink.innerText);  
       }
     })
     .catch(error => {
       console.error('Upload error:', error);
       alert('Upload failed!');
     });
+}
+
+function uploadFileXMLHttpRequest(file){
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const xhr = new XMLHttpRequest();
+
+  xhr.open('POST', '/upload');
+
+  xhr.upload.onprogress = function (event) {
+    if (event.lengthComputable) {
+      const percent = (event.loaded / event.total) * 100;
+      console.log(`Upload progress: ${percent.toFixed(2)}%`);
+    }
+  };
+
+  xhr.onload = function () {
+    console.log('Upload complete');
+    const data = JSON.parse(xhr.responseText);
+    if(data.success){
+      const file_name = data.file;
+      const uid = data.uid;        
+      fileName.innerText = file_name;
+      downloadLink.innerText = downloadEndpoint + uid;
+      downloadLink.setAttribute('href', downloadEndpoint + uid);
+      downloadContainer.style.display = 'flex';
+      generateQRcode(downloadLink.innerText);  
+    }
+  };
+
+  xhr.onerror = () => {
+    resultBox.textContent = 'Upload failed (network error)';
+  };
+
+  xhr.onabort = () => {
+    resultBox.textContent = 'Upload aborted';
+  };
+
+  xhr.send(formData);
 }
 
 function generateQRcode(text){
