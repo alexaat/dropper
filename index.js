@@ -7,6 +7,7 @@ const dropZone = document.querySelector('#drop_zone');
 const downloadContainer = document.querySelector('#download_container');
 const fileName = document.querySelector('#file_name');
 const downloadLink = document.querySelector('#download_link');
+const progress = document.querySelector('#progress')
 
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -21,7 +22,8 @@ dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      uploadFile(files[0]);
+      //uploadFile(files[0]);
+      uploadFileXMLHttpRequest(files[0]);
     }
 });
 
@@ -58,35 +60,43 @@ function uploadFileXMLHttpRequest(file){
 
   const xhr = new XMLHttpRequest();
 
-  xhr.open('POST', '/upload');
+  xhr.open('POST', endpoint);
 
   xhr.upload.onprogress = function (event) {
     if (event.lengthComputable) {
-      const percent = (event.loaded / event.total) * 100;
-      console.log(`Upload progress: ${percent.toFixed(2)}%`);
+      const percent = (event.loaded / event.total) * 100;      
+      progress.style.display = "block";
+      progress.innerText = `Upload progress: ${percent.toFixed(2)}%`;
     }
   };
 
   xhr.onload = function () {
-    console.log('Upload complete');
-    const data = JSON.parse(xhr.responseText);
-    if(data.success){
-      const file_name = data.file;
-      const uid = data.uid;        
-      fileName.innerText = file_name;
-      downloadLink.innerText = downloadEndpoint + uid;
-      downloadLink.setAttribute('href', downloadEndpoint + uid);
-      downloadContainer.style.display = 'flex';
-      generateQRcode(downloadLink.innerText);  
+    if (xhr.status >= 200 && xhr.status < 300) {
+      try{         
+        const data = JSON.parse(xhr.responseText);       
+        if(data.success){
+          const file_name = data.file;
+          const uid = data.uid;        
+          fileName.innerText = file_name;
+          downloadLink.innerText = downloadEndpoint + uid;
+          downloadLink.setAttribute('href', downloadEndpoint + uid);
+          downloadContainer.style.display = 'flex';
+          generateQRcode(downloadLink.innerText);  
+        }
+      } catch (e){
+          alert(`Upload complete, but invalid JSON response: ${e}`);
+      }
+    } else {
+      alert(`Error: ${xhr.status} ${xhr.statusText}`);
     }
   };
 
   xhr.onerror = () => {
-    resultBox.textContent = 'Upload failed (network error)';
+    alert('Upload failed (network error)');
   };
 
   xhr.onabort = () => {
-    resultBox.textContent = 'Upload aborted';
+    alert('Upload aborted');
   };
 
   xhr.send(formData);

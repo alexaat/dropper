@@ -12,6 +12,7 @@ body{
     justify-content: center;
     padding: 16px;
     flex-direction: column;
+    gap: 20px;
 }
 
 #drop_zone{
@@ -47,4 +48,8 @@ body{
 
 #qrcode{    
 
+}
+
+#progress{
+    display: none;
 }
