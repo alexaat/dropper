@@ -1,4 +1,4 @@
-const endpoint = 'http://server.dropper.alexaat.com/serve.php';
+const endpoint = 'https://server.dropper.alexaat.com/serve.php';
 //const endpoint = 'http://localhost:3000/serve.php';
 
 const downloadEndpoint = endpoint + '?uid=';
