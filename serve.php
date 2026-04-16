@@ -61,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
 }
 
-
 function serve_file($uid){
 
     $files = glob("uploads/".$uid."/*");

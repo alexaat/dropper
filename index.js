@@ -25,7 +25,6 @@ dropZone.addEventListener('drop', (e) => {
     }
 });
 
-
 function uploadFile(file){
     const formData = new FormData();
     formData.append('file', file);
@@ -103,5 +102,3 @@ function generateQRcode(text){
         correctLevel : QRCode.CorrectLevel.H
     });
 }
-
-
