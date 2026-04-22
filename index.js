@@ -1,5 +1,5 @@
-const endpoint = 'http://server.dropper.alexaat.com/serve.php';
-//const endpoint = 'http://localhost:3000/serve.php';
+//const endpoint = 'http://server.dropper.alexaat.com/serve.php';
+const endpoint = 'http://localhost:3000/serve.php';
 
 const downloadEndpoint = endpoint + '?uid=';
 
@@ -7,7 +7,8 @@ const dropZone = document.querySelector('#drop_zone');
 const downloadContainer = document.querySelector('#download_container');
 const fileName = document.querySelector('#file_name');
 const downloadLink = document.querySelector('#download_link');
-const progress = document.querySelector('#progress')
+const qrcode = document.querySelector('#qrcode');
+const progress = document.querySelector('#progress');
 
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -19,6 +20,13 @@ dropZone.addEventListener('dragleave', () => {
 });
 
 dropZone.addEventListener('drop', (e) => {
+    if(downloadLink.innerText){
+      sendDeleteRequest(downloadLink.innerText);      
+    }
+    if(downloadContainer){    
+      downloadContainer.style.display = 'none';
+      qrcode.innerHTML = '';
+    }
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
@@ -47,9 +55,8 @@ function uploadFile(file){
         generateQRcode(downloadLink.innerText);  
       }
     })
-    .catch(error => {
-      console.error('Upload error:', error);
-      alert('Upload failed!');
+    .catch(error => {      
+      alert('Upload failed! ' + error);
     });
 }
 
@@ -112,3 +119,18 @@ function generateQRcode(text){
         correctLevel : QRCode.CorrectLevel.H
     });
 }
+
+function sendDeleteRequest(url){
+  fetch(url, {
+      method: 'DELETE'    
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => alert('Delete error: ' + error));
+}
+
+window.addEventListener("beforeunload", () => {
+  if(downloadLink.innerText){
+    sendDeleteRequest(downloadLink.innerText);    
+  }
+});

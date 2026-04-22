@@ -1,7 +1,7 @@
 <?php
-header("Access-Control-Allow-Origin: http://dropper.alexaat.com");
-//header("Access-Control-Allow-Origin: http://localhost:8000");
-header("Access-Control-Allow-Methods: POST, GET");
+//header("Access-Control-Allow-Origin: http://dropper.alexaat.com");
+header("Access-Control-Allow-Origin: http://localhost:8000");
+header("Access-Control-Allow-Methods: POST, GET, DELETE");
 header("Access-Control-Allow-Headers: Content-Type");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -47,12 +47,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uri = $_SERVER['REQUEST_URI'];
     $prefix = '/serve.php?uid=';
 
-
-
     if (substr($uri, 0, strlen($prefix)) == $prefix) {
         $uid = substr($uri, strlen($prefix));      
         serve_file($uid);
     }  
+
+} else if ($_SERVER['REQUEST_METHOD'] === 'DELETE'){
+    $uri = $_SERVER['REQUEST_URI'];
+    $prefix = '/serve.php?uid=';
+
+    if (substr($uri, 0, strlen($prefix)) == $prefix) {
+        $uid = substr($uri, strlen($prefix));  
+        deleteDir("uploads/".$uid);
+        echo json_encode([
+            "success" => true,
+            "message" => "Delete successful"
+        ]);
+        exit;
+    }
+    echo json_encode([
+        "success" => false,
+        "message" => "File not found"
+    ]); 
 
 } else {
     echo json_encode([
